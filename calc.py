@@ -1,8 +1,7 @@
 from items import piItem,piItems
 from collections import defaultdict
 from copy import copy
-
-import json
+from operator import itemgetter,attrgetter
 
 def calcAmount(itemName,quantity):
     array = []
@@ -13,7 +12,7 @@ def calcAmount(itemName,quantity):
     # find first level
     for item in items:
             if item not in array:
-                item.inputQuantity = item.inputQuantity * round(item.total /   item.outputQuantity)  
+                item.inputQuantity = item.inputQuantity * round(quantity/   item.outputQuantity)  
                 item.outputQuantity = quantity
                 array.append(copy(item))
     # find all other levels
@@ -81,11 +80,13 @@ def merge_itemsLists(lists):
     
     return result
 
-prodList1 = calcAmount('Vaccines',6)
-prodList2 = calcAmount('Neocoms',1)
+prodList = [('Wetware Mainframe',1),('Broadcast Node',500)]
+resultLists = []
+for item in prodList:
+     resultLists.append(calcAmount(item[0],item[1]))
 
+merged_items = merge_itemsLists(resultLists)
+sorted_data = sorted(merged_items, key=lambda x: x['inputQuantity'])
 
-
-merged_items = merge_itemsLists([prodList1, prodList2])
-for item in merged_items:
+for item in sorted_data:
     print(item)
