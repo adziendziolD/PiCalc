@@ -1,7 +1,7 @@
 # from items import piItems
 from collections import defaultdict
 from copy import copy
-from pyscript import document
+from pyscript import document,display,HTML
 
 # _______________________________ITEMS 
 class piItem():
@@ -219,6 +219,9 @@ def merge_itemsLists(lists):
     for name, values in final_merge.items():
         if len(values['inputNames']) > 1:
             input_name = ""
+            for x in values['inputNames']:
+                input_name += x +", "
+            # input_name = "multiple"
         else:
             input_name = next(iter(values['inputNames']))
         result.append({
@@ -239,10 +242,22 @@ def calculatePi(event):
     merged_items = merge_itemsLists(resultLists)
     sorted_data = sorted(merged_items, key=lambda x: x['inputQuantity'])
 
-    output_div = document.querySelector("#output")
+    selectInput = document.querySelector("#select").value
+    amountInput = document.querySelector("#amount").value
 
+    tableOutput = document.querySelector("#output1")
+    # output_div = document.querySelector("#output1")
+
+
+    displayTable = "<table class=\"table table-hover\"><thead><tr><th scope=\"col\">Material</th><th scope=\"col\">Output Quantity</th><th scope=\"col\">InputName</th><th scope=\"col\">Input Quantity</th></tr></thead><tbody>" 
     for item in sorted_data:
-        print(item)
-    output_div.innerText = sorted_data
+        displayTable += "<tr><th scope=\"row\">"+ item["name"]+"</th><td>"+str(item["outputQuantity"])+"</td><td>"+ item["inputName"] +"</td><td>"+str(item["inputQuantity"])+"</td></tr>"
+
+    displayTable += " </tbody></table>"
+    # document.querySelector("#output1").innerText = selectInput + " " + amountInput
+
+    display(HTML(displayTable),target="output2",append=False)
+
+    document.querySelector("#output2").append = displayTable
 
 
