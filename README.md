@@ -2,14 +2,14 @@
 
 PiCalculator
 
-# install Django
+# Install Pyscritp
 
-python -m pip install Django
+pip install pyscript
 
-https://docs.djangoproject.com/en/5.1/intro/install/
+# RUN
 
-python -m django startproject mysite djangotutorial
+python3 -m http.server
 
-# Run
+# create own copy lib to make it usable / see subfolder
 
-py manage.py runserver
+python3 -m build

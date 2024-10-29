@@ -1,0 +1,7 @@
+setup.py
+copy/__init__.py
+copy/copy.py
+copy.egg-info/PKG-INFO
+copy.egg-info/SOURCES.txt
+copy.egg-info/dependency_links.txt
+copy.egg-info/top_level.txt

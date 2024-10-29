@@ -1,7 +1,7 @@
 from items import piItem,piItems
 from collections import defaultdict
 from copy import copy
-from operator import itemgetter,attrgetter
+# from pyscript import document
 
 def calcAmount(itemName,quantity):
     array = []
@@ -80,13 +80,19 @@ def merge_itemsLists(lists):
     
     return result
 
-prodList = [('Wetware Mainframe',1),('Broadcast Node',500)]
-resultLists = []
-for item in prodList:
-     resultLists.append(calcAmount(item[0],item[1]))
+def calculatePi(event):
+    prodList = [('Wetware Mainframe',1),('Broadcast Node',500)]
+    resultLists = []
+    for item in prodList:
+        resultLists.append(calcAmount(item[0],item[1]))
 
-merged_items = merge_itemsLists(resultLists)
-sorted_data = sorted(merged_items, key=lambda x: x['inputQuantity'])
+    merged_items = merge_itemsLists(resultLists)
+    sorted_data = sorted(merged_items, key=lambda x: x['inputQuantity'])
 
-for item in sorted_data:
-    print(item)
+    # output_div = document.querySelector("#output")
+
+    for item in sorted_data:
+        print(item)
+    # output_div.innerText = result
+
+calculatePi(1)
