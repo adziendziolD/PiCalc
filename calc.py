@@ -13,7 +13,7 @@ class piItem():
         self.inputQuantity = inputQuantity
 
 
-piItems =[
+piItemList =[
 piItem('Bacteria',20,'Microorganisms',3000),
 piItem('Biocells',5,'Precious Metals',40),
 piItem('Biocells',5,'Biofuels',40),
@@ -153,17 +153,22 @@ piItem('Wetware Mainframe',1,'Supercomputers',6),
 
 # ------------------FUNKTIONS-----------------------------
 
-def calcAmount(itemName,quantity):
+def calcAmount(itemName,InputQuantity):
     array = []
-    quantity = checkAndAdjustMinimalQuantity(itemName,quantity)
+    items= []
+    piItems = copy(piItemList)
+    
+    quantity = checkAndAdjustMinimalQuantity(itemName,InputQuantity)
+    print("Quantity after minimal Check " + str(quantity))
     
     items = [piItem for piItem in piItems if piItem.name == itemName]
-
+ 
     # find first level
     for item in items:
             if item not in array:
                 item.inputQuantity = item.inputQuantity * round(quantity/   item.outputQuantity)  
                 item.outputQuantity = quantity
+                print("If Item Not In Array" + str(item.inputQuantity) +"/" + str(item.outputQuantity) )
                 array.append(copy(item))
     # find all other levels
     findLevelsWithValues(items,array)
@@ -171,9 +176,12 @@ def calcAmount(itemName,quantity):
     return array
 
 def checkAndAdjustMinimalQuantity(itemName,quantity):
+    piItems = copy(piItemList)
     for piItem in piItems:
             if piItem.name==itemName:
+                print("OutputQuantity Check minimal " + str(piItem.outputQuantity))
                 minimalQuantity = piItem.outputQuantity
+                print("minimalQuantity Check minimal " + str(minimalQuantity))
                 break
 
     if quantity % minimalQuantity > 0:
@@ -182,11 +190,13 @@ def checkAndAdjustMinimalQuantity(itemName,quantity):
 
 
 def findLevelsWithValues(resultList,array): 
+    piItems = copy(piItemList)
     for resultItem in resultList:
         items = [piItem for piItem in piItems if piItem.name == resultItem.inputName]
         for item in items:
             item.inputQuantity = item.inputQuantity * round(resultItem.inputQuantity /   item.outputQuantity)  
             item.outputQuantity = resultItem.inputQuantity
+            print(item.inputQuantity, item.outputQuantity)
             array.append(copy(item))
         # recursion baby
         findLevelsWithValues(items,array)
@@ -233,31 +243,46 @@ def merge_itemsLists(lists):
     
     return result
 
+def items_to_html_options(piItems): 
+    unique_names = set()
+    html = "<select class=\"form-select\" id=\"select\">\n"
+    html += "<option selected>Select PI-Material</option>\n"
+    for item in piItems: 
+        if item.name not in unique_names: 
+            unique_names.add(item.name)
+            html += f" <option value=\"{item.name}\">{item.name}</option>\n"
+    html += "</select>" 
+    display(HTML(html),target="selectOutput",append=False)
+
 def calculatePi(event):
-    prodList = [('Wetware Mainframe',1),('Broadcast Node',500)]
-    resultLists = []
-    for item in prodList:
-        resultLists.append(calcAmount(item[0],item[1]))
-
-    merged_items = merge_itemsLists(resultLists)
-    sorted_data = sorted(merged_items, key=lambda x: x['inputQuantity'])
-
+    quantity = 0
     selectInput = document.querySelector("#select").value
     amountInput = document.querySelector("#amount").value
+    if selectInput != "" and amountInput != "":
+        prodList = [(selectInput,int(amountInput))]
+        resultLists = []
 
-    tableOutput = document.querySelector("#output1")
-    # output_div = document.querySelector("#output1")
-
-
-    displayTable = "<table class=\"table table-hover\"><thead><tr><th scope=\"col\">Material</th><th scope=\"col\">Output Quantity</th><th scope=\"col\">InputName</th><th scope=\"col\">Input Quantity</th></tr></thead><tbody>" 
-    for item in sorted_data:
-        displayTable += "<tr><th scope=\"row\">"+ item["name"]+"</th><td>"+str(item["outputQuantity"])+"</td><td>"+ item["inputName"] +"</td><td>"+str(item["inputQuantity"])+"</td></tr>"
-
-    displayTable += " </tbody></table>"
-    # document.querySelector("#output1").innerText = selectInput + " " + amountInput
-
-    display(HTML(displayTable),target="output2",append=False)
-
-    document.querySelector("#output2").append = displayTable
+        print(prodList)
+        for item in prodList:
+            print(item[0],item[1])
+            resultLists.append(calcAmount(item[0],item[1]))
 
 
+        merged_items = merge_itemsLists(resultLists)
+        sorted_data = sorted(merged_items, key=lambda x: x['inputQuantity'])
+
+    
+        displayTable = "<table class=\"table table-hover\"><thead><tr><th scope=\"col\">Material</th><th scope=\"col\">Output Quantity</th><th scope=\"col\">InputName</th><th scope=\"col\">Input Quantity</th></tr></thead><tbody>" 
+        for item in sorted_data:
+            print(item)
+            displayTable += "<tr><th scope=\"row\">"+ item["name"]+"</th><td>"+str(item["outputQuantity"])+"</td><td>"+ item["inputName"] +"</td><td>"+str(item["inputQuantity"])+"</td></tr>"
+
+        displayTable += " </tbody></table>"
+
+        display(HTML(displayTable),target="output1",append=False)
+    else:
+        displayTable = "<p>Not all inputs were selected<p>"
+        display(HTML(displayTable),target="output1",append=False)
+
+
+items_to_html_options(piItemList)
