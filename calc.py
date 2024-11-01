@@ -259,7 +259,7 @@ def calculatePi(event):
     quantity = 0
     selectInput = document.querySelector("#select").value
     amountInput = document.querySelector("#amount").value
-    if selectInput != "" and amountInput != "":
+    if selectInput != "" and amountInput != "" and selectInput != "Select PI-Material":
         prodList = [(selectInput,int(amountInput)),('Wetware Mainframe',1)]
         resultLists = []
 
