@@ -259,15 +259,22 @@ def items_to_html_options(piItems):
     display(HTML(html),target="selectOutput",append=False)
 
 def calculatePi(event):
-    quantity = 0
-    selectInput = document.querySelector("#select").value
-    amountInput = document.querySelector("#amount").value
-    if selectInput != "" and amountInput != "" and selectInput != "Select PI-Material":
-        prodList = [(selectInput,int(amountInput)),('Wetware Mainframe',1)]
+    inputList = document.getElementById("inputList")
+    
+    
+    if inputList.value != "":
+        lines = inputList.value.split('\n')
+        prodlist= []
+        for line in lines: 
+            parts = line.rsplit(' ', 1) 
+            if len(parts) == 2: 
+                name, number = parts 
+                prodlist.append((name, int(number)))
+        
         resultLists = []
 
 
-        for item in prodList:
+        for item in prodlist:
             resultLists.append(deepcopy(calcAmount(item[0],item[1])))
 
 
@@ -277,7 +284,7 @@ def calculatePi(event):
     
         displayTable = "<table class=\"table table-hover\"><thead><tr><th scope=\"col\">PI-Level</th><th scope=\"col\">Material</th><th scope=\"col\">Output #</th><th scope=\"col\">Input Material needed</th><th scope=\"col\">Quantity needed</th></tr></thead><tbody>" 
         for item in sorted_data:         
-            if len([touple for touple in prodList if touple[0] == item['name']]) == 1:
+            if len([touple for touple in prodlist if touple[0] == item['name']]) == 1:
                 displayTable += "<tr class=\"table-success\">"
             else:
                 displayTable += "<tr>"
@@ -287,8 +294,20 @@ def calculatePi(event):
 
         display(HTML(displayTable),target="output1",append=False)
     else:
-        displayTable = "<p>Not all inputs were selected<p>"
+        displayTable = "<div class=\"h4 pb-2 mb-4 p-1 text-danger border-top border-Dangersubtle\">No Materials selected!</div>"
         display(HTML(displayTable),target="output1",append=False)
 
+def addToList(event): 
+    selectInput = document.querySelector("#select").value
+    amountInput = document.querySelector("#amount").value
+    if selectInput != "" and amountInput != "" and selectInput != "Select PI-Material":
+        inputList = document.getElementById("inputList")
+        if inputList.value =="": 
+            inputList.value = selectInput + " " + str(amountInput)
+        else:
+            inputList.value += "\n" + selectInput + " " + str(amountInput)
+        
+        print(inputList)
+    
 
 items_to_html_options(piItemList)
