@@ -1,6 +1,6 @@
 # from items import piItems
 from collections import defaultdict
-from copy import copy
+from copy import copy,deepcopy
 from pyscript import document,display,HTML
 
 # _______________________________ITEMS 
@@ -153,30 +153,9 @@ piItem('Wetware Mainframe',1,'Supercomputers',6),
 
 # ------------------FUNKTIONS-----------------------------
 
-def calcAmount(itemName,InputQuantity):
-    array = []
-    items= []
-    piItems = copy(piItemList)
-    
-    quantity = checkAndAdjustMinimalQuantity(itemName,InputQuantity)
-    print("Quantity after minimal Check " + str(quantity))
-    
-    items = [piItem for piItem in piItems if piItem.name == itemName]
- 
-    # find first level
-    for item in items:
-            if item not in array:
-                item.inputQuantity = item.inputQuantity * round(quantity/   item.outputQuantity)  
-                item.outputQuantity = quantity
-                print("If Item Not In Array" + str(item.inputQuantity) +"/" + str(item.outputQuantity) )
-                array.append(copy(item))
-    # find all other levels
-    findLevelsWithValues(items,array)
-
-    return array
 
 def checkAndAdjustMinimalQuantity(itemName,quantity):
-    piItems = copy(piItemList)
+    piItems = deepcopy(piItemList)
     for piItem in piItems:
             if piItem.name==itemName:
                 print("OutputQuantity Check minimal " + str(piItem.outputQuantity))
@@ -188,18 +167,40 @@ def checkAndAdjustMinimalQuantity(itemName,quantity):
           quantity = quantity + (minimalQuantity - quantity % minimalQuantity)
     return quantity
 
+def calcAmount(itemName,InputQuantity):
+    array = []
+    items= []
+    piItems = deepcopy(piItemList)
+    
+    quantity = checkAndAdjustMinimalQuantity(itemName,InputQuantity)
+    print("Quantity after minimal Check " + str(quantity))
+    
+    items = [piItem for piItem in piItems if piItem.name == itemName]
+ 
+    # find first level
+    for item in items:
+            if item not in array:
+                item.inputQuantity = item.inputQuantity * round(quantity/   item.outputQuantity)  
+                item.outputQuantity = copy(quantity)
+                print("If Item Not In Array" + str(item.inputQuantity) +"/" + str(item.outputQuantity) )
+                array.append(deepcopy(item))
+    # find all other levels
+    array = findLevelsWithValues(items,array)
+
+    return array
+
 
 def findLevelsWithValues(resultList,array): 
-    piItems = copy(piItemList)
+    piItems = deepcopy(piItemList)
     for resultItem in resultList:
         items = [piItem for piItem in piItems if piItem.name == resultItem.inputName]
         for item in items:
             item.inputQuantity = item.inputQuantity * round(resultItem.inputQuantity /   item.outputQuantity)  
             item.outputQuantity = resultItem.inputQuantity
             print(item.inputQuantity, item.outputQuantity)
-            array.append(copy(item))
+            array.append(deepcopy(item))
         # recursion baby
-        findLevelsWithValues(items,array)
+        array = findLevelsWithValues(items,array)
     return array
 
 
@@ -259,13 +260,13 @@ def calculatePi(event):
     selectInput = document.querySelector("#select").value
     amountInput = document.querySelector("#amount").value
     if selectInput != "" and amountInput != "":
-        prodList = [(selectInput,int(amountInput))]
+        prodList = [(selectInput,int(amountInput)),('Wetware Mainframe',1)]
         resultLists = []
 
         print(prodList)
         for item in prodList:
             print(item[0],item[1])
-            resultLists.append(calcAmount(item[0],item[1]))
+            resultLists.append(deepcopy(calcAmount(item[0],item[1])))
 
 
         merged_items = merge_itemsLists(resultLists)
