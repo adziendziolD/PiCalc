@@ -249,14 +249,15 @@ def merge_itemsLists(lists):
 
 def items_to_html_options(piItems): 
     unique_names = set()
-    html = "<select class=\"form-select\" id=\"select\">\n"
-    html += "<option selected>Select PI-Material</option>\n"
+    html = "<select class=\"form-select\" size=\"5\" id=\"select\">\n"
+    # html += "<option selected>Select PI-Material</option>\n"
     for item in piItems: 
         if item.name not in unique_names: 
             unique_names.add(item.name)
             html += f" <option value=\"{item.name}\">{item.name}</option>\n"
     html += "</select>" 
     display(HTML(html),target="selectOutput",append=False)
+
 
 def calculatePi(event):
     inputList = document.getElementById("inputList")
@@ -298,7 +299,7 @@ def calculatePi(event):
         display(HTML(displayTable),target="output1",append=False)
 
 def addToList(event): 
-    selectInput = document.querySelector("#select").value
+    selectInput = document.getElementById("select").value
     amountInput = document.querySelector("#amount").value
     if selectInput != "" and amountInput != "" and selectInput != "Select PI-Material":
         inputList = document.getElementById("inputList")
